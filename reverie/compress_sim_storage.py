@@ -60,7 +60,8 @@ def compress(sim_code):
 
 
 if __name__ == '__main__':
-  compress("July1_the_ville_isabella_maria_klaus-step-3-9")
+  # 需要demo时，下面改为要演示的simulation name
+  compress("test00")
 
 
 
