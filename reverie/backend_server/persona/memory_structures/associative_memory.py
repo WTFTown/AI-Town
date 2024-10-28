@@ -25,7 +25,7 @@ class ConceptNode:
     self.node_id = node_id
     self.node_count = node_count
     self.type_count = type_count
-    self.type = node_type # thought / event / chat
+    self.type = node_type # thought / event / chat / attack
     self.depth = depth
 
     self.created = created
@@ -54,10 +54,12 @@ class AssociativeMemory:
     self.seq_event = []
     self.seq_thought = []
     self.seq_chat = []
+    self.seq_attack = []  # 新增: 攻击序列
 
     self.kw_to_event = dict()
     self.kw_to_thought = dict()
     self.kw_to_chat = dict()
+    self.kw_to_attack = dict()  # 新增: 攻击关键词映射
 
     self.kw_strength_event = dict()
     self.kw_strength_thought = dict()
@@ -100,6 +102,9 @@ class AssociativeMemory:
                    description, keywords, poignancy, embedding_pair, filling)
       elif node_type == "thought": 
         self.add_thought(created, expiration, s, p, o, 
+                   description, keywords, poignancy, embedding_pair, filling)
+      elif node_type == "attack": 
+        self.add_attack(created, expiration, s, p, o, 
                    description, keywords, poignancy, embedding_pair, filling)
 
     kw_strength_load = json.load(open(f_saved + "/kw_strength.json"))
@@ -270,6 +275,36 @@ class AssociativeMemory:
         
     return node
 
+  def add_attack(self, created, expiration, s, p, o, 
+                 description, keywords, poignancy, 
+                 embedding_pair, filling): 
+    # 设置节点ID和计数
+    node_count = len(self.id_to_node.keys()) + 1
+    type_count = len(self.seq_attack) + 1
+    node_type = "attack"
+    node_id = f"node_{str(node_count)}"
+    depth = 0
+
+    # 创建 ConceptNode 对象
+    node = ConceptNode(node_id, node_count, type_count, node_type, depth,
+                       created, expiration, 
+                       s, p, o, 
+                       description, embedding_pair[0], poignancy, keywords, filling)
+
+    # 创建各种字典缓存以便快速访问
+    self.seq_attack[0:0] = [node]
+    keywords = [i.lower() for i in keywords]
+    for kw in keywords: 
+      if kw in self.kw_to_attack: 
+        self.kw_to_attack[kw][0:0] = [node]
+      else: 
+        self.kw_to_attack[kw] = [node]
+    self.id_to_node[node_id] = node 
+
+    self.embeddings[embedding_pair[0]] = embedding_pair[1]
+        
+    return node
+
 
   def get_summarized_latest_events(self, retention): 
     ret_set = set()
@@ -302,6 +337,28 @@ class AssociativeMemory:
     return ret_str
 
 
+  # def get_str_seq_attacks(self): 
+  #   ret_str = ""
+  #   for count, attack in enumerate(self.seq_attack): 
+  #       ret_str += f"Attack against {attack.object} ({attack.description})\n"
+  #       ret_str += f'{attack.created.strftime("%B %d, %Y, %H:%M:%S")}\n'
+  #       if attack.filling:
+  #           for row in attack.filling: 
+  #               ret_str += f"{row[0]}: {row[1]}\n"
+  #   return ret_str
+
+  def get_str_seq_attacks(self): 
+      ret_str = ""
+      for count, attack in enumerate(self.seq_attack): 
+          ret_str += f'{"Attack", len(self.seq_attack) - count}: {attack.subject} -> {attack.object}\n'
+          ret_str += f'Description: {attack.description}\n'
+          ret_str += f'Time: {attack.created.strftime("%B %d, %Y, %H:%M:%S")}\n'
+          if attack.filling:
+              for row in attack.filling: 
+                  ret_str += f"{row[0]}: {row[1]}\n"
+          ret_str += "-------------------\n"
+      return ret_str
+  
   def retrieve_relevant_thoughts(self, s_content, p_content, o_content): 
     contents = [s_content, p_content, o_content]
 
@@ -333,6 +390,11 @@ class AssociativeMemory:
       return False
 
 
+  def get_last_attack(self, target_persona_name): 
+    if target_persona_name.lower() in self.kw_to_attack: 
+      return self.kw_to_attack[target_persona_name.lower()][0]
+    else: 
+      return False
 
 
 

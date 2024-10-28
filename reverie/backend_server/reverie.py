@@ -385,6 +385,8 @@ class ReverieServer:
             movements["persona"][persona_name]["description"] = description
             movements["persona"][persona_name]["chat"] = (persona
                                                           .scratch.chat)
+            movements["persona"][persona_name]["attack"] = (persona
+                                                          .scratch.attack)
 
           # Include the meta information about the current stage in the 
           # movements dictionary. 

@@ -61,7 +61,7 @@ def compress(sim_code):
 
 if __name__ == '__main__':
   # 需要demo时，下面改为要演示的simulation name
-  compress("test00")
+  compress("test03")
 
 
 

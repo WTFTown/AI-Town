@@ -63,6 +63,12 @@ class Scratch:
     self.importance_ele_n = 0 
     self.thought_count = 5
 
+    # Violence variables
+    self.violence_score = 10
+    self.health = 100
+    self.alive = True
+    self.attack_power = 10
+
     # PERSONA PLANNING 
     # <daily_req> is a list of various goals the persona is aiming to achieve
     # today. 
@@ -147,6 +153,13 @@ class Scratch:
     self.chatting_with_buffer = dict()
     self.chatting_end_time = None
 
+    # ATTACKING states
+    self.attacking_at = None
+    self.being_attacked_by = None
+    self.attacking_end_time = None
+    self.attacking_buffer = dict()
+
+    # <path_set> is True if we've already calculated the path the persona will
     # <path_set> is True if we've already calculated the path the persona will
     # take to execute this action. That path is stored in the persona's 
     # scratch.planned_path.
@@ -184,6 +197,11 @@ class Scratch:
       self.lifestyle = scratch_load["lifestyle"]
       self.living_area = scratch_load["living_area"]
 
+      self.violence_score = scratch_load["violence_score"]
+      self.health = scratch_load["health"]
+      self.alive = scratch_load["alive"]
+      self.attack_power = scratch_load["attack_power"]
+
       self.concept_forget = scratch_load["concept_forget"]
       self.daily_reflection_time = scratch_load["daily_reflection_time"]
       self.daily_reflection_size = scratch_load["daily_reflection_size"]
@@ -210,7 +228,7 @@ class Scratch:
                                               scratch_load["act_start_time"],
                                               "%B %d, %Y, %H:%M:%S")
       else: 
-        self.curr_time = None
+        self.act_start_time = None
       self.act_duration = scratch_load["act_duration"]
       self.act_description = scratch_load["act_description"]
       self.act_pronunciatio = scratch_load["act_pronunciatio"]
@@ -229,6 +247,16 @@ class Scratch:
                                             "%B %d, %Y, %H:%M:%S")
       else:
         self.chatting_end_time = None
+
+      self.attacking_at = scratch_load["attacking_at"]
+      self.being_attacked_by = scratch_load["being_attacked_by"]
+      self.attacking_buffer = scratch_load["attacking_buffer"]
+      if scratch_load["attacking_end_time"]: 
+        self.attacking_end_time = datetime.datetime.strptime(
+                                            scratch_load["attacking_end_time"],
+                                            "%B %d, %Y, %H:%M:%S")
+      else:
+        self.attacking_end_time = None
 
       self.act_path_set = scratch_load["act_path_set"]
       self.planned_path = scratch_load["planned_path"]
@@ -251,6 +279,11 @@ class Scratch:
     scratch["curr_time"] = self.curr_time.strftime("%B %d, %Y, %H:%M:%S")
     scratch["curr_tile"] = self.curr_tile
     scratch["daily_plan_req"] = self.daily_plan_req
+
+    scratch["violence_score"] = self.violence_score
+    scratch["health"] = self.health
+    scratch["alive"] = self.alive
+    scratch["attack_power"] = self.attack_power
 
     scratch["name"] = self.name
     scratch["first_name"] = self.first_name
@@ -302,6 +335,15 @@ class Scratch:
                                         .strftime("%B %d, %Y, %H:%M:%S"))
     else: 
       scratch["chatting_end_time"] = None
+
+    scratch["attacking_at"] = self.attacking_at
+    scratch["being_attacked_by"] = self.being_attacked_by
+    if self.attacking_end_time: 
+      scratch["attacking_end_time"] = (self.attacking_end_time
+                                        .strftime("%B %d, %Y, %H:%M:%S"))
+    else:
+      scratch["attacking_end_time"] = None
+    scratch["attacking_buffer"] = self.attacking_buffer
 
     scratch["act_path_set"] = self.act_path_set
     scratch["planned_path"] = self.planned_path
@@ -491,6 +533,10 @@ class Scratch:
                      chat, 
                      chatting_with_buffer,
                      chatting_end_time,
+                     attacking_at, 
+                     being_attacked_by, 
+                     attacking_buffer, 
+                     attacking_end_time,
                      act_obj_description, 
                      act_obj_pronunciatio, 
                      act_obj_event, 
@@ -506,6 +552,12 @@ class Scratch:
     if chatting_with_buffer: 
       self.chatting_with_buffer.update(chatting_with_buffer)
     self.chatting_end_time = chatting_end_time
+
+    self.attacking_at = attacking_at
+    self.being_attacked_by = being_attacked_by
+    self.attacking_end_time = attacking_end_time
+    if attacking_buffer: 
+      self.attacking_buffer.update(attacking_buffer)
 
     self.act_obj_description = act_obj_description
     self.act_obj_pronunciatio = act_obj_pronunciatio
@@ -546,6 +598,8 @@ class Scratch:
       
     if self.chatting_with: 
       end_time = self.chatting_end_time
+    elif self.attacking_at: 
+      end_time = self.attacking_end_time
     else: 
       x = self.act_start_time
       if x.second != 0: 

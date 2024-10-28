@@ -2910,9 +2910,293 @@ def run_gpt_generate_iterative_chat_utt(maze, init_persona, target_persona, retr
                "frequency_penalty": 0, "presence_penalty": 0, "stop": None}
   return output, [output, prompt, gpt_param, prompt_input, fail_safe]
 
+def run_gpt_prompt_decide_to_attack(persona, target_persona, retrieved, test_input=None, verbose=False):
+    def create_prompt_input(init_persona, target_persona, retrieved, test_input=None):
+        last_interaction = init_persona.a_mem.get_last_interaction(target_persona.name)
+        last_interaction_time = ""
+        last_interaction_about = ""
+        if last_interaction:
+            last_interaction_time = last_interaction.created.strftime("%B %d, %Y, %H:%M:%S")
+            last_interaction_about = last_interaction.description
 
+        context = ""
+        for c_node in retrieved["events"] + retrieved["thoughts"]:
+            context += f"{c_node.description}. "
 
+        curr_time = init_persona.scratch.curr_time.strftime("%B %d, %Y, %H:%M:%S %p")
+        
+        prompt_input = [
+            context,
+            curr_time,
+            init_persona.name,
+            target_persona.name,
+            last_interaction_time,
+            last_interaction_about,
+            f"{init_persona.name} (violence_score: {init_persona.scratch.violence_score}, health: {init_persona.scratch.health}, attack_power: {init_persona.scratch.attack_power})",
+            f"{target_persona.name} (health: {target_persona.scratch.health}, attack_power: {target_persona.scratch.attack_power})",
+            init_persona.name,
+            target_persona.name
+        ]
+        return prompt_input
 
+    def __func_clean_up(gpt_response, prompt=""):
+        return gpt_response.split("Answer in yes or no:")[-1].strip().lower()
+
+    def __func_validate(gpt_response, prompt=""):
+        try:
+            if gpt_response.split("Answer in yes or no:")[-1].strip().lower() in ["yes", "no"]:
+                return True
+            return False
+        except:
+            return False
+
+    def get_fail_safe():
+        return "no"
+
+    gpt_param = {"engine": "gpt-3.5-turbo", "max_tokens": 50,
+                 "temperature": 0.7, "top_p": 1, "stream": False,
+                 "frequency_penalty": 0, "presence_penalty": 0, "stop": None}
+    prompt_template = "persona/prompt_template/v2/decide_to_attack_v2.txt"
+    prompt_input = create_prompt_input(persona, target_persona, retrieved, test_input)
+    prompt = generate_prompt(prompt_input, prompt_template)
+
+    fail_safe = get_fail_safe()
+    output = safe_generate_response(prompt, gpt_param, 5, fail_safe,
+                                    __func_validate, __func_clean_up)
+
+    if debug or verbose:
+        print_run_prompts(prompt_template, persona, gpt_param,
+                          prompt_input, prompt, output)
+
+    return output, [output, prompt, gpt_param, prompt_input, fail_safe]
+
+def run_gpt_prompt_decide_attack_reaction(persona, attacker_persona, attack_description, test_input=None, verbose=False):
+    def create_prompt_input(persona, attacker_persona, attack_description, test_input=None):
+        prompt_input = [
+            persona.scratch.get_str_iss(),
+            attacker_persona.name,
+            attack_description,
+            f"{persona.name} (health: {persona.scratch.health}, attack_power: {persona.scratch.attack_power})",
+            f"{attacker_persona.name} (health: {attacker_persona.scratch.health}, attack_power: {attacker_persona.scratch.attack_power})",
+            persona.name
+        ]
+        return prompt_input
+
+    def __func_clean_up(gpt_response, prompt=""):
+        return gpt_response.strip().lower()
+
+    def __func_validate(gpt_response, prompt=""):
+        valid_responses = ["attack back", "flee"]
+        return gpt_response.strip().lower() in valid_responses
+
+    def get_fail_safe():
+        return "flee"
+
+    gpt_param = {"engine": "gpt-3.5-turbo", "max_tokens": 50,
+                 "temperature": 0.7, "top_p": 1, "stream": False,
+                 "frequency_penalty": 0, "presence_penalty": 0, "stop": None}
+    prompt_template = "persona/prompt_template/v2/decide_to_react_attack_v2.txt"
+    prompt_input = create_prompt_input(persona, attacker_persona, attack_description, test_input)
+    prompt = generate_prompt(prompt_input, prompt_template)
+
+    fail_safe = get_fail_safe()
+    output = safe_generate_response(prompt, gpt_param, 5, fail_safe,
+                                    __func_validate, __func_clean_up)
+
+    if debug or verbose:
+        print_run_prompts(prompt_template, persona, gpt_param,
+                          prompt_input, prompt, output)
+
+    return output, [output, prompt, gpt_param, prompt_input, fail_safe]
+
+def run_gpt_prompt_generate_attack_action(persona, target_persona, test_input=None, verbose=False):
+    def create_prompt_input(persona, target_persona, test_input=None):
+        prompt_input = [
+            persona.scratch.get_str_iss(),
+            target_persona.name,
+            f"{persona.name} (health: {persona.scratch.health}, attack_power: {persona.scratch.attack_power})",
+            f"{target_persona.name} (health: {target_persona.scratch.health}, attack_power: {target_persona.scratch.attack_power})",
+            persona.name,
+            target_persona.name
+        ]
+        return prompt_input
+
+    def __func_clean_up(gpt_response, prompt=""):
+        return gpt_response.strip()
+
+    def __func_validate(gpt_response, prompt=""):
+        return len(gpt_response.strip()) > 0
+
+    def get_fail_safe():
+        return f"{persona.name} attempts to punch {target_persona.name}."
+
+    gpt_param = {"engine": "gpt-3.5-turbo", "max_tokens": 100,
+                 "temperature": 0.7, "top_p": 1, "stream": False,
+                 "frequency_penalty": 0, "presence_penalty": 0, "stop": None}
+    prompt_template = "persona/prompt_template/v2/generate_attack_action_v1.txt"
+    prompt_input = create_prompt_input(persona, target_persona, test_input)
+    prompt = generate_prompt(prompt_input, prompt_template)
+
+    fail_safe = get_fail_safe()
+    output = safe_generate_response(prompt, gpt_param, 5, fail_safe,
+                                    __func_validate, __func_clean_up)
+
+    if debug or verbose:
+        print_run_prompts(prompt_template, persona, gpt_param,
+                          prompt_input, prompt, output)
+
+    return output, [output, prompt, gpt_param, prompt_input, fail_safe]
+
+def run_gpt_prompt_attack_summarize_ideas(init_persona, target_persona, all_embedding_key_str, curr_context, test_input=None, verbose=False):
+    def create_prompt_input(init_persona, target_persona, all_embedding_key_str, curr_context, test_input=None):
+        prompt_input = [
+            init_persona.name,
+            target_persona.name,
+            all_embedding_key_str,
+            curr_context
+        ]
+        return prompt_input
+
+    def __func_clean_up(gpt_response, prompt=""):
+        return gpt_response.strip()
+
+    def __func_validate(gpt_response, prompt=""):
+        return len(gpt_response.strip()) > 0
+
+    def get_fail_safe():
+        return f"{init_persona.name} is considering attacking {target_persona.name}."
+
+    gpt_param = {"engine": "gpt-3.5-turbo", "max_tokens": 150,
+                 "temperature": 0.7, "top_p": 1, "stream": False,
+                 "frequency_penalty": 0, "presence_penalty": 0, "stop": None}
+    prompt_template = "persona/prompt_template/v2/attack_summarize_ideas_v1.txt"
+    prompt_input = create_prompt_input(init_persona, target_persona, all_embedding_key_str, curr_context, test_input)
+    prompt = generate_prompt(prompt_input, prompt_template)
+
+    fail_safe = get_fail_safe()
+    output = safe_generate_response(prompt, gpt_param, 5, fail_safe,
+                                    __func_validate, __func_clean_up)
+
+    if debug or verbose:
+        print_run_prompts(prompt_template, init_persona, gpt_param,
+                          prompt_input, prompt, output)
+
+    return output, [output, prompt, gpt_param, prompt_input, fail_safe]
+
+def run_gpt_prompt_attack_summarize_relationship(init_persona, target_persona, all_embedding_key_str, test_input=None, verbose=False):
+    def create_prompt_input(init_persona, target_persona, all_embedding_key_str, test_input=None):
+        prompt_input = [
+            init_persona.name,
+            target_persona.name,
+            all_embedding_key_str
+        ]
+        return prompt_input
+
+    def __func_clean_up(gpt_response, prompt=""):
+        return gpt_response.strip()
+
+    def __func_validate(gpt_response, prompt=""):
+        return len(gpt_response.strip()) > 0
+
+    def get_fail_safe():
+        return f"{init_persona.name} and {target_persona.name} have a neutral relationship."
+
+    gpt_param = {"engine": "gpt-3.5-turbo", "max_tokens": 100,
+                 "temperature": 0.7, "top_p": 1, "stream": False,
+                 "frequency_penalty": 0, "presence_penalty": 0, "stop": None}
+    prompt_template = "persona/prompt_template/v2/attack_summarize_relationship_v1.txt"
+    prompt_input = create_prompt_input(init_persona, target_persona, all_embedding_key_str, test_input)
+    prompt = generate_prompt(prompt_input, prompt_template)
+
+    fail_safe = get_fail_safe()
+    output = safe_generate_response(prompt, gpt_param, 5, fail_safe,
+                                    __func_validate, __func_clean_up)
+
+    if debug or verbose:
+        print_run_prompts(prompt_template, init_persona, gpt_param,
+                          prompt_input, prompt, output)
+
+    return output, [output, prompt, gpt_param, prompt_input, fail_safe]
+
+def run_gpt_prompt_generate_attack(maze, init_persona, target_persona, curr_context, init_summ_idea, target_summ_idea, test_input=None, verbose=False):
+    def create_prompt_input(maze, init_persona, target_persona, curr_context, init_summ_idea, target_summ_idea, test_input=None):
+        prompt_input = [
+            init_persona.name,
+            target_persona.name,
+            curr_context,
+            init_summ_idea,
+            target_summ_idea,
+            f"{init_persona.name} (health: {init_persona.scratch.health}, attack_power: {init_persona.scratch.attack_power})",
+            f"{target_persona.name} (health: {target_persona.scratch.health}, attack_power: {target_persona.scratch.attack_power})"
+        ]
+        return prompt_input
+
+    def __func_clean_up(gpt_response, prompt=""):
+        return gpt_response.strip()
+
+    def __func_validate(gpt_response, prompt=""):
+        return len(gpt_response.strip()) > 0
+
+    def get_fail_safe():
+        return f"{init_persona.name} attempts to punch {target_persona.name}."
+
+    gpt_param = {"engine": "gpt-3.5-turbo", "max_tokens": 200,
+                 "temperature": 0.7, "top_p": 1, "stream": False,
+                 "frequency_penalty": 0, "presence_penalty": 0, "stop": None}
+    prompt_template = "persona/prompt_template/v2/generate_attack_v1.txt"
+    prompt_input = create_prompt_input(maze, init_persona, target_persona, curr_context, init_summ_idea, target_summ_idea, test_input)
+    prompt = generate_prompt(prompt_input, prompt_template)
+
+    fail_safe = get_fail_safe()
+    output = safe_generate_response(prompt, gpt_param, 5, fail_safe,
+                                    __func_validate, __func_clean_up)
+
+    if debug or verbose:
+        print_run_prompts(prompt_template, init_persona, gpt_param,
+                          prompt_input, prompt, output)
+
+    return output, [output, prompt, gpt_param, prompt_input, fail_safe]
+
+def run_gpt_prompt_generate_attack_poignancy(persona, attack_description, test_input=None, verbose=False):
+    def create_prompt_input(persona, attack_description, test_input=None):
+        prompt_input = [
+            persona.name,
+            attack_description
+        ]
+        return prompt_input
+
+    def __func_clean_up(gpt_response, prompt=""):
+        try:
+            return float(gpt_response.strip())
+        except ValueError:
+            return 5.0  # Default value if conversion fails
+
+    def __func_validate(gpt_response, prompt=""):
+        try:
+            value = float(gpt_response.strip())
+            return 1 <= value <= 10
+        except ValueError:
+            return False
+
+    def get_fail_safe():
+        return "5.0"
+
+    gpt_param = {"engine": "gpt-3.5-turbo", "max_tokens": 10,
+                 "temperature": 0.2, "top_p": 1, "stream": False,
+                 "frequency_penalty": 0, "presence_penalty": 0, "stop": None}
+    prompt_template = "persona/prompt_template/v2/generate_attack_poignancy_v1.txt"
+    prompt_input = create_prompt_input(persona, attack_description, test_input)
+    prompt = generate_prompt(prompt_input, prompt_template)
+
+    fail_safe = get_fail_safe()
+    output = safe_generate_response(prompt, gpt_param, 5, fail_safe,
+                                    __func_validate, __func_clean_up)
+
+    if debug or verbose:
+        print_run_prompts(prompt_template, persona, gpt_param,
+                          prompt_input, prompt, output)
+
+    return output, [output, prompt, gpt_param, prompt_input, fail_safe]
 
 
 

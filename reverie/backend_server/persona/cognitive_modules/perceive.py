@@ -21,7 +21,10 @@ def generate_poig_score(persona, event_type, description):
   elif event_type == "chat": 
     return run_gpt_prompt_chat_poignancy(persona, 
                            persona.scratch.act_description)[0]
-
+  elif event_type == "attack":
+    # TODO: 需要review，run_gpt_prompt_attack_poignancy 目前还没完成
+    return run_gpt_prompt_attack_poignancy(persona, description)[0]
+  
 def perceive(persona, maze): 
   """
   Perceives events around the persona and saves it to the memory, both events 
@@ -171,10 +174,42 @@ def perceive(persona, maze):
                       persona.scratch.chat)
         chat_node_ids = [chat_node.node_id]
 
+      # 处理攻击事件
+      attack_node_ids = []
+      if p_event[1] == "attacks" or p_event[1] == "is attacked by":
+          # 更新关键词
+          keywords.update(["attack", "violence"])
+          
+          # 获取攻击事件的影响力
+          attack_poignancy = generate_poig_score(persona, "attack", desc_embedding_in)
+          
+          # 获取攻击事件的embedding
+          if desc_embedding_in in persona.a_mem.embeddings:
+              attack_embedding = persona.a_mem.embeddings[desc_embedding_in]
+          else:
+              attack_embedding = get_embedding(desc_embedding_in)
+          
+          attack_embedding_pair = (desc_embedding_in, attack_embedding)
+          
+          # 添加到攻击记忆中
+          attack_node = persona.a_mem.add_attack(
+              persona.scratch.curr_time, 
+              None,
+              p_event[0],  # 攻击者
+              p_event[1],  # 动作(attacks/is attacked by)
+              p_event[2],  # 被攻击者
+              desc,        # 使用原始描述而不是act_description
+              keywords,
+              attack_poignancy,
+              attack_embedding_pair,
+              persona.scratch.attacking_buffer
+          )
+          attack_node_ids = [attack_node.node_id]
+          
       # Finally, we add the current event to the agent's memory. 
       ret_events += [persona.a_mem.add_event(persona.scratch.curr_time, None,
                            s, p, o, desc, keywords, event_poignancy, 
-                           event_embedding_pair, chat_node_ids)]
+                           event_embedding_pair, chat_node_ids + attack_node_ids)]
       persona.scratch.importance_trigger_curr -= event_poignancy
       persona.scratch.importance_ele_n += 1
 
