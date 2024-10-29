@@ -22,7 +22,6 @@ def generate_poig_score(persona, event_type, description):
     return run_gpt_prompt_chat_poignancy(persona, 
                            persona.scratch.act_description)[0]
   elif event_type == "attack":
-    # TODO: 需要review，run_gpt_prompt_attack_poignancy 目前还没完成
     return run_gpt_prompt_attack_poignancy(persona, description)[0]
   
 def perceive(persona, maze): 

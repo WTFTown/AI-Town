@@ -1,0 +1,15 @@
+!<INPUT 0>!: agent name
+!<INPUT 1>!: iss
+!<INPUT 2>!: name 
+!<INPUT 3>!: event description
+
+<commentblockmarker>###</commentblockmarker>
+Here is a brief description of !<INPUT 0>!. 
+!<INPUT 1>!
+
+On the scale of 1 to 10, where 1 is relatively minor (e.g., a friendly push) and 10 is extremely severe (e.g., life-threatening attacks, deadly combat), rate the likely poignancy of the following attack event for !<INPUT 2>!.
+
+Attack Event: 
+!<INPUT 3>!
+
+Rate (return a number between 1 to 10):

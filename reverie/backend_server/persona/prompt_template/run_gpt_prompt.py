@@ -2037,7 +2037,55 @@ def run_gpt_prompt_chat_poignancy(persona, event_description, test_input=None, v
     return output, [output, prompt, gpt_param, prompt_input, fail_safe]
   # ChatGPT Plugin ===========================================================
 
+def run_gpt_prompt_attack_poignancy(persona, description, test_input=None, verbose=False):
+    def create_prompt_input(persona, description, test_input=None):
+        prompt_input = [persona.scratch.name,
+                       persona.scratch.get_str_iss(),
+                       persona.scratch.name,
+                       description]
+        return prompt_input
+    
+    def __func_clean_up(gpt_response, prompt=""):
+        gpt_response = int(gpt_response.strip())
+        return gpt_response
 
+    def __func_validate(gpt_response, prompt=""):
+        try:
+            __func_clean_up(gpt_response, prompt)
+            return True
+        except:
+            return False
+
+    def get_fail_safe():
+        return 4
+
+    # ChatGPT Plugin
+    def __chat_func_clean_up(gpt_response, prompt=""):
+        gpt_response = int(gpt_response)
+        return gpt_response
+
+    def __chat_func_validate(gpt_response, prompt=""):
+        try:
+            __func_clean_up(gpt_response, prompt)
+            return True
+        except:
+            return False
+
+    gpt_param = {"engine": "gpt-3.5-turbo", "max_tokens": 15,
+                 "temperature": 0, "top_p": 1, "stream": False,
+                 "frequency_penalty": 0, "presence_penalty": 0, "stop": None}
+    prompt_template = "persona/prompt_template/v3_ChatGPT/poignancy_attack_v1.txt"
+    prompt_input = create_prompt_input(persona, description)
+    prompt = generate_prompt(prompt_input, prompt_template)
+    example_output = "5"
+    special_instruction = "The output should ONLY contain ONE integer value on the scale of 1 to 10."
+    fail_safe = get_fail_safe()
+    output = ChatGPT_safe_generate_response(prompt, example_output, special_instruction, 3, fail_safe,
+                                          __chat_func_validate, __chat_func_clean_up, True)
+    if output != False:
+        return output, [output, prompt, gpt_param, prompt_input, fail_safe]
+
+    return fail_safe, [fail_safe, prompt, gpt_param, prompt_input, fail_safe]
 
 
   # gpt_param = {"engine": "gpt-3.5-turbo", "max_tokens": 3, 
@@ -3156,59 +3204,3 @@ def run_gpt_prompt_generate_attack(maze, init_persona, target_persona, curr_cont
                           prompt_input, prompt, output)
 
     return output, [output, prompt, gpt_param, prompt_input, fail_safe]
-
-def run_gpt_prompt_generate_attack_poignancy(persona, attack_description, test_input=None, verbose=False):
-    def create_prompt_input(persona, attack_description, test_input=None):
-        prompt_input = [
-            persona.name,
-            attack_description
-        ]
-        return prompt_input
-
-    def __func_clean_up(gpt_response, prompt=""):
-        try:
-            return float(gpt_response.strip())
-        except ValueError:
-            return 5.0  # Default value if conversion fails
-
-    def __func_validate(gpt_response, prompt=""):
-        try:
-            value = float(gpt_response.strip())
-            return 1 <= value <= 10
-        except ValueError:
-            return False
-
-    def get_fail_safe():
-        return "5.0"
-
-    gpt_param = {"engine": "gpt-3.5-turbo", "max_tokens": 10,
-                 "temperature": 0.2, "top_p": 1, "stream": False,
-                 "frequency_penalty": 0, "presence_penalty": 0, "stop": None}
-    prompt_template = "persona/prompt_template/v2/generate_attack_poignancy_v1.txt"
-    prompt_input = create_prompt_input(persona, attack_description, test_input)
-    prompt = generate_prompt(prompt_input, prompt_template)
-
-    fail_safe = get_fail_safe()
-    output = safe_generate_response(prompt, gpt_param, 5, fail_safe,
-                                    __func_validate, __func_clean_up)
-
-    if debug or verbose:
-        print_run_prompts(prompt_template, persona, gpt_param,
-                          prompt_input, prompt, output)
-
-    return output, [output, prompt, gpt_param, prompt_input, fail_safe]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
