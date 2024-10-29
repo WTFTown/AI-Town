@@ -244,10 +244,53 @@ def reflect(persona):
                                 thought_embedding_pair, evidence)
 
 
+  # 处理攻击事件的反思
+  if (persona.scratch.act_event[1] == "attacks" or 
+      persona.scratch.act_event[1] == "is attacked by"):
+      # 获取攻击事件的详细信息
+      attack_node = persona.a_mem.get_last_attack()
+      if attack_node:
+          evidence = [attack_node.node_id]
+          
+          # 生成攻击反思
+          reflection_thought = generate_attack_reflection_thought(persona, attack_node.description)
+          reflection_thought = f"After the fight, {persona.scratch.name} thinks: {reflection_thought}"
+          
+          # 添加反思到记忆
+          created = persona.scratch.curr_time
+          expiration = persona.scratch.curr_time + datetime.timedelta(days=30)
+          s, p, o = generate_action_event_triple(reflection_thought, persona)
+          keywords = set([s, p, o])
+          thought_poignancy = generate_poig_score(persona, "thought", reflection_thought)
+          thought_embedding_pair = (reflection_thought, get_embedding(reflection_thought))
+          
+          persona.a_mem.add_thought(created, expiration, s, p, o,
+                                  reflection_thought, keywords, thought_poignancy,
+                                  thought_embedding_pair, evidence)
+          
+          # 生成攻击备忘录
+          # TODO: 判断是否有用
+          memo_thought = generate_attack_memo(persona, attack_node.description)
+          memo_thought = f"{persona.scratch.name} {memo_thought}"
+          
+          # 添加备忘录到记忆
+          s, p, o = generate_action_event_triple(memo_thought, persona)
+          keywords = set([s, p, o])
+          thought_poignancy = generate_poig_score(persona, "thought", memo_thought)
+          thought_embedding_pair = (memo_thought, get_embedding(memo_thought))
+          
+          persona.a_mem.add_thought(created, expiration, s, p, o,
+                                  memo_thought, keywords, thought_poignancy,
+                                  thought_embedding_pair, evidence)
 
 
+def generate_attack_reflection_thought(persona, attack_description):
+    """生成攻击后的反思"""
+    return run_gpt_prompt_attack_reflection(persona, attack_description)[0]
 
-
+def generate_attack_memo(persona, attack_description):
+    """生成攻击的备忘录"""
+    return run_gpt_prompt_attack_memo(persona, attack_description)[0]
 
 
 

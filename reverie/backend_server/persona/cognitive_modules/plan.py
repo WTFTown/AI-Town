@@ -15,7 +15,7 @@ from global_methods import *
 from persona.prompt_template.run_gpt_prompt import *
 from persona.cognitive_modules.retrieve import *
 from persona.cognitive_modules.converse import *
-
+from persona.cognitive_modules.attack import *
 ##############################################################################
 # CHAPTER 2: Generate
 ##############################################################################
@@ -742,6 +742,23 @@ def _should_react(persona, retrieved, personas):
       return True
 
     return False
+  
+  def lets_attack(init_persona, target_persona, retrieved):
+    # 如果任一persona在睡觉,不能攻击
+    if ("sleeping" in target_persona.scratch.act_description 
+        or "sleeping" in init_persona.scratch.act_description): 
+        return False
+
+    # 检查攻击缓冲
+    if hasattr(init_persona.scratch, 'attacking_buffer') and init_persona.scratch.attacking_buffer > 0:
+        return False
+
+    # 调用GPT判断是否要攻击
+    focal_points = [f"{target_persona.name}", "attack", "violence"]
+    attack_retrieved = new_retrieve(init_persona, focal_points, 25)
+    attack_decision = run_gpt_prompt_decide_to_attack(init_persona, target_persona, attack_retrieved)[0]
+
+    return attack_decision == "yes"
 
   def lets_react(init_persona, target_persona, retrieved): 
     if (not target_persona.scratch.act_address 
@@ -795,7 +812,12 @@ def _should_react(persona, retrieved, personas):
 
   if ":" not in curr_event.subject: 
     # this is a persona event. 
-    if lets_talk(persona, personas[curr_event.subject], retrieved):
+    # 检查是否是攻击事件
+    if ("attacks" in curr_event.predicate or 
+        "is attacked by" in curr_event.predicate):
+        if lets_attack(persona, personas[curr_event.subject], retrieved):
+            return "attack"
+    elif lets_talk(persona, personas[curr_event.subject], retrieved):
       return f"chat with {curr_event.subject}"
     react_mode = lets_react(persona, personas[curr_event.subject], 
                             retrieved)
@@ -903,6 +925,39 @@ def _chat_react(maze, persona, focused_event, reaction_mode, personas):
       act_pronunciatio, act_obj_description, act_obj_pronunciatio, 
       act_obj_event, act_start_time)
 
+def _attack_react(maze, persona, focused_event, personas):
+    """处理攻击事件的反应
+    
+    Args:
+        maze: 游戏地图实例
+        persona: 当前persona实例
+        focused_event: 检索到的相关事件
+        personas: 所有persona字典
+    """
+    # 获取攻击目标
+    target_name = focused_event["curr_event"].description.split(" attacks ")[-1]
+    target_persona = None
+    for p in personas.values():
+        if p.name == target_name:
+            target_persona = p
+            break
+            
+    if target_persona:
+        # 调用agent_attack处理攻击
+        attack_result = agent_attack(maze, persona, target_persona)
+        
+        # 更新persona状态
+        persona.scratch.act_description = attack_result
+        persona.scratch.act_event = (persona.name, "attacks", target_persona.name)
+        persona.scratch.attacking_buffer = 5  # 设置攻击缓冲,避免连续攻击
+        
+        # 更新目标状态
+        if "defeated" in attack_result:
+            target_persona.scratch.health = 0
+        elif "fled" in attack_result:
+            target_persona.scratch.act_description = "fled from attack"
+            target_persona.scratch.act_event = (target_persona.name, "flees from", persona.name)
+
 
 def _wait_react(persona, reaction_mode): 
   p = persona
@@ -983,6 +1038,8 @@ def plan(persona, maze, personas, new_day, retrieved):
       # If we do want to chat, then we generate conversation 
       if reaction_mode[:9] == "chat with":
         _chat_react(maze, persona, focused_event, reaction_mode, personas)
+      elif reaction_mode == "attack":
+        _attack_react(maze, persona, focused_event, personas)
       elif reaction_mode[:4] == "wait": 
         _wait_react(persona, reaction_mode)
       # elif reaction_mode == "do other things": 
@@ -991,6 +1048,9 @@ def plan(persona, maze, personas, new_day, retrieved):
   # Step 3: Chat-related state clean up. 
   # If the persona is not chatting with anyone, we clean up any of the 
   # chat-related states here. 
+  if persona.scratch.act_event[1] != "attacks":
+    persona.scratch.attacking_buffer = max(0, persona.scratch.attacking_buffer - 1)
+
   if persona.scratch.act_event[1] != "chat with":
     persona.scratch.chatting_with = None
     persona.scratch.chat = None

@@ -2960,16 +2960,18 @@ def run_gpt_generate_iterative_chat_utt(maze, init_persona, target_persona, retr
 
 def run_gpt_prompt_decide_to_attack(persona, target_persona, retrieved, test_input=None, verbose=False):
     def create_prompt_input(init_persona, target_persona, retrieved, test_input=None):
+        # 从retrieved中获取上下文
+        context = ""
+        for c_node in retrieved["events"] + retrieved["thoughts"]:
+            context += f"{c_node.description}. "
+            
+        # 获取上次互动
         last_interaction = init_persona.a_mem.get_last_interaction(target_persona.name)
         last_interaction_time = ""
         last_interaction_about = ""
         if last_interaction:
             last_interaction_time = last_interaction.created.strftime("%B %d, %Y, %H:%M:%S")
             last_interaction_about = last_interaction.description
-
-        context = ""
-        for c_node in retrieved["events"] + retrieved["thoughts"]:
-            context += f"{c_node.description}. "
 
         curr_time = init_persona.scratch.curr_time.strftime("%B %d, %Y, %H:%M:%S %p")
         
@@ -3018,12 +3020,28 @@ def run_gpt_prompt_decide_to_attack(persona, target_persona, retrieved, test_inp
 
     return output, [output, prompt, gpt_param, prompt_input, fail_safe]
 
-def run_gpt_prompt_decide_attack_reaction(persona, attacker_persona, attack_description, test_input=None, verbose=False):
-    def create_prompt_input(persona, attacker_persona, attack_description, test_input=None):
+def run_gpt_prompt_decide_attack_reaction(persona, attacker_persona, attack_description, retrieved, test_input=None, verbose=False):
+    def create_prompt_input(persona, attacker_persona, attack_description, retrieved, test_input=None):
+        # 从retrieved中获取记忆
+        memory_str = ""
+        for memory in retrieved["events"] + retrieved["thoughts"]:
+            memory_str += f"{memory.description}\n"
+            
+        # 获取上次互动
+        last_interaction = persona.a_mem.get_last_interaction(attacker_persona.name)
+        last_interaction_time = ""
+        last_interaction_about = ""
+        if last_interaction:
+            last_interaction_time = last_interaction.created.strftime("%B %d, %Y, %H:%M:%S")
+            last_interaction_about = last_interaction.description
+
         prompt_input = [
             persona.scratch.get_str_iss(),
             attacker_persona.name,
             attack_description,
+            memory_str,
+            last_interaction_time,
+            last_interaction_about,
             f"{persona.name} (health: {persona.scratch.health}, attack_power: {persona.scratch.attack_power})",
             f"{attacker_persona.name} (health: {attacker_persona.scratch.health}, attack_power: {attacker_persona.scratch.attack_power})",
             persona.name
@@ -3043,8 +3061,8 @@ def run_gpt_prompt_decide_attack_reaction(persona, attacker_persona, attack_desc
     gpt_param = {"engine": "gpt-3.5-turbo", "max_tokens": 50,
                  "temperature": 0.7, "top_p": 1, "stream": False,
                  "frequency_penalty": 0, "presence_penalty": 0, "stop": None}
-    prompt_template = "persona/prompt_template/v2/decide_to_react_attack_v2.txt"
-    prompt_input = create_prompt_input(persona, attacker_persona, attack_description, test_input)
+    prompt_template = "persona/prompt_template/v2/decide_attack_reaction_v2.txt"
+    prompt_input = create_prompt_input(persona, attacker_persona, attack_description, retrieved, test_input)
     prompt = generate_prompt(prompt_input, prompt_template)
 
     fail_safe = get_fail_safe()
@@ -3201,6 +3219,92 @@ def run_gpt_prompt_generate_attack(maze, init_persona, target_persona, curr_cont
 
     if debug or verbose:
         print_run_prompts(prompt_template, init_persona, gpt_param,
+                          prompt_input, prompt, output)
+
+    return output, [output, prompt, gpt_param, prompt_input, fail_safe]
+
+def run_gpt_prompt_attack_reflection(persona, attack_description, test_input=None, verbose=False):
+    def create_prompt_input(persona, attack_description, test_input=None):
+        # 获取最近的攻击相关记忆
+        focal_points = ["attack", "violence", attack_description]
+        retrieved = new_retrieve(persona, focal_points, 10)
+        memory_str = ""
+        for memory in retrieved["events"] + retrieved["thoughts"]:
+            memory_str += f"{memory.description}\n"
+            
+        prompt_input = [
+            persona.name,
+            attack_description,
+            memory_str,
+            f"{persona.name} (health: {persona.scratch.health}, attack_power: {persona.scratch.attack_power})"
+        ]
+        return prompt_input
+
+    def __func_clean_up(gpt_response, prompt=""):
+        return gpt_response.strip()
+
+    def __func_validate(gpt_response, prompt=""):
+        return len(gpt_response.strip()) > 0
+
+    def get_fail_safe():
+        return f"{persona.name} reflects on the violence and its consequences."
+
+    gpt_param = {"engine": "gpt-3.5-turbo", "max_tokens": 150,
+                 "temperature": 0.7, "top_p": 1, "stream": False,
+                 "frequency_penalty": 0, "presence_penalty": 0, "stop": None}
+    prompt_template = "persona/prompt_template/v2/attack_reflection_v1.txt"
+    prompt_input = create_prompt_input(persona, attack_description, test_input)
+    prompt = generate_prompt(prompt_input, prompt_template)
+
+    fail_safe = get_fail_safe()
+    output = safe_generate_response(prompt, gpt_param, 5, fail_safe,
+                                    __func_validate, __func_clean_up)
+
+    if debug or verbose:
+        print_run_prompts(prompt_template, persona, gpt_param,
+                          prompt_input, prompt, output)
+
+    return output, [output, prompt, gpt_param, prompt_input, fail_safe]
+
+def run_gpt_prompt_attack_memo(persona, attack_description, test_input=None, verbose=False):
+    def create_prompt_input(persona, attack_description, test_input=None):
+        # 获取最近的攻击相关记忆
+        focal_points = ["attack", "violence", attack_description]
+        retrieved = new_retrieve(persona, focal_points, 10)
+        memory_str = ""
+        for memory in retrieved["events"] + retrieved["thoughts"]:
+            memory_str += f"{memory.description}\n"
+            
+        prompt_input = [
+            persona.name,
+            attack_description,
+            memory_str,
+            persona.scratch.get_str_iss()  # 包含性格特征
+        ]
+        return prompt_input
+
+    def __func_clean_up(gpt_response, prompt=""):
+        return gpt_response.strip()
+
+    def __func_validate(gpt_response, prompt=""):
+        return len(gpt_response.strip()) > 0
+
+    def get_fail_safe():
+        return f"makes a mental note about the violent encounter"
+
+    gpt_param = {"engine": "gpt-3.5-turbo", "max_tokens": 100,
+                 "temperature": 0.7, "top_p": 1, "stream": False,
+                 "frequency_penalty": 0, "presence_penalty": 0, "stop": None}
+    prompt_template = "persona/prompt_template/v2/attack_memo_v1.txt"
+    prompt_input = create_prompt_input(persona, attack_description, test_input)
+    prompt = generate_prompt(prompt_input, prompt_template)
+
+    fail_safe = get_fail_safe()
+    output = safe_generate_response(prompt, gpt_param, 5, fail_safe,
+                                    __func_validate, __func_clean_up)
+
+    if debug or verbose:
+        print_run_prompts(prompt_template, persona, gpt_param,
                           prompt_input, prompt, output)
 
     return output, [output, prompt, gpt_param, prompt_input, fail_safe]
