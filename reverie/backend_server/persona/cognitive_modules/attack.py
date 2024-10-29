@@ -1,13 +1,17 @@
 import datetime
 import random
 from global_methods import get_embedding
-from persona.prompt_template.run_gpt_prompt import run_gpt_prompt_attack_summarize_ideas, run_gpt_prompt_attack_summarize_relationship, run_gpt_prompt_generate_attack, run_gpt_prompt_generate_attack_poignancy
-
+from persona.cognitive_modules.retrieve import *
 from persona.prompt_template.run_gpt_prompt import (
+    run_gpt_prompt_attack_summarize_ideas,
+    run_gpt_prompt_attack_summarize_relationship,
+    run_gpt_prompt_generate_attack,
+    run_gpt_prompt_generate_attack_poignancy,
     run_gpt_prompt_decide_to_attack,
     run_gpt_prompt_decide_attack_reaction,
     run_gpt_prompt_generate_attack_action
 )
+
 def generate_attack_summarize_ideas(init_persona, target_persona, retrieved, curr_context):
     all_embedding_keys = [i.embedding_key for val in retrieved.values() for i in val]
     all_embedding_key_str = "\n".join(all_embedding_keys)
@@ -83,17 +87,21 @@ def add_attack_to_memory(persona, target_persona, attack_details):
                             attack_embedding_pair, None)
 
 def process_attack(maze, init_persona, target_persona):
-    # Step 1: Decide to attack
-    attack_decision, _ = run_gpt_prompt_decide_to_attack(init_persona, target_persona, retrieved)
+    # Step 1: Retrieve memories
+    focal_points = [f"{target_persona.name}", "attack", "violence"]
+    retrieved = new_retrieve(init_persona, focal_points, 25)
+    
+    # Step 2: Decide to attack
+    attack_decision = run_gpt_prompt_decide_to_attack(init_persona, target_persona, retrieved)[0]
     
     if attack_decision == "yes":
         while True:
             # Generate attack action
-            attack_action, _ = run_gpt_prompt_generate_attack_action(init_persona, target_persona)
+            attack_action, = run_gpt_prompt_generate_attack_action(init_persona, target_persona)[0]
             
             # Update health based on attack action
             damage = calculate_damage(init_persona, target_persona, attack_action)
-            target_persona.scratch.health -= damage
+            adjust_health(target_persona, damage)
             
             # Add attack to memory
             attack_details = {
@@ -105,14 +113,24 @@ def process_attack(maze, init_persona, target_persona):
             if target_persona.scratch.health <= 0:
                 return f"{target_persona.name} has been defeated."
             
-            # Decide target's reaction
-            reaction, _ = run_gpt_prompt_decide_attack_reaction(target_persona, init_persona, attack_action)
+            # Retrieve target's memories before deciding reaction
+            target_retrieved = new_retrieve(target_persona, 
+                                         [f"{init_persona.name}", "attack", "violence"], 
+                                         25)
+            
+            # Decide target's reaction with retrieved memories
+            reaction = run_gpt_prompt_decide_attack_reaction(target_persona, 
+                                                           init_persona, 
+                                                           attack_action,
+                                                           target_retrieved)[0]
             
             if reaction == "flee":
                 return f"{target_persona.name} has fled from the attack."
             
             # If target decides to attack back, swap roles and continue the loop
             init_persona, target_persona = target_persona, init_persona
+            # Also swap retrieved memories
+            retrieved = target_retrieved
     
     return "No attack occurred."
 
@@ -121,3 +139,7 @@ def calculate_damage(attacker, defender, attack_action):
     base_damage = attacker.scratch.attack_power
     # 可以根据 attack_action 的描述来调整伤害
     return base_damage
+
+def adjust_health(persona, damage):
+    persona.scratch.health = max(persona.scratch.health - damage, 0)
+    return persona.scratch.health
