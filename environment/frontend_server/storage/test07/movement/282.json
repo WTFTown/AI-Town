@@ -1,0 +1,37 @@
+{
+  "persona": {
+    "Isabella Rodriguez": {
+      "movement": [
+        75,
+        14
+      ],
+      "pronunciatio": "\ud83c\udf73",
+      "description": "waking up and completing her morning routine (eating breakfast) @ the Ville:Isabella Rodriguez's apartment:main room:refrigerator",
+      "chat": null,
+      "attack": null
+    },
+    "Maria Lopez": {
+      "movement": [
+        123,
+        48
+      ],
+      "pronunciatio": "\ud83c\udf73",
+      "description": "waking up and completing her morning routine (making breakfast) @ the Ville:Dorm for Oak Hill College:kitchen:cooking area",
+      "chat": null,
+      "attack": null
+    },
+    "Klaus Mueller": {
+      "movement": [
+        100,
+        46
+      ],
+      "pronunciatio": "\ud83c\udf73",
+      "description": "waking up and completing his morning routine (eating breakfast) @ the Ville:Dorm for Oak Hill College:kitchen:refrigerator",
+      "chat": null,
+      "attack": null
+    }
+  },
+  "meta": {
+    "curr_time": "February 13, 2023, 00:47:00"
+  }
+}

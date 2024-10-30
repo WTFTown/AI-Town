@@ -1,0 +1,167 @@
+{
+  "persona": {
+    "Isabella Rodriguez": {
+      "movement": [
+        73,
+        14
+      ],
+      "pronunciatio": "\ud83d\udc57",
+      "description": "waking up and completing her morning routine (getting dressed) @ the Ville:Isabella Rodriguez's apartment:bathroom:shower",
+      "chat": null,
+      "attack": null
+    },
+    "Maria Lopez": {
+      "movement": [
+        123,
+        57
+      ],
+      "pronunciatio": "\ud83d\udcac",
+      "description": "conversing about plans for the day and catching up over coffee at Hobbs Cafe after studying at the library, with Maria Lopez and Klaus Mueller discussing research papers, physics classes, and a Twitch stream @ <persona> Klaus Mueller",
+      "chat": [
+        [
+          "Maria Lopez",
+          "Hey Klaus! How did you sleep last night? Have any exciting plans for today?"
+        ],
+        [
+          "Klaus Mueller",
+          "Hey Maria! I actually had a great night's sleep. Today I plan on heading to the library to work on my research paper on the effects of gentrification in low-income communities. What about you?"
+        ],
+        [
+          "Maria Lopez",
+          "That sounds interesting! I'm actually planning on attending my physics classes at Oak Hill College and then hitting the library to study. We should catch up later!"
+        ],
+        [
+          "Klaus Mueller",
+          "That sounds like a plan! We should definitely catch up later, maybe grab a coffee at Hobbs Cafe after our library sessions."
+        ],
+        [
+          "Maria Lopez",
+          "Sounds like a plan! Let's meet at Hobbs Cafe around 5:00 pm after we finish studying."
+        ],
+        [
+          "Klaus Mueller",
+          "Great idea! I look forward to catching up with you at Hobbs Cafe at 5:00 pm."
+        ],
+        [
+          "Maria Lopez",
+          "Great! See you at 5:00 pm at Hobbs Cafe, Klaus!"
+        ],
+        [
+          "Klaus Mueller",
+          "I can't wait to discuss our findings on social issues over coffee. It'll be a great way to end the day."
+        ],
+        [
+          "Maria Lopez",
+          "By the way Klaus, I'll be streaming games on Twitch tonight from 6:00 pm to 9:00 pm. Feel free to tune in if you're interested!"
+        ],
+        [
+          "Klaus Mueller",
+          "That sounds awesome, Maria! I'll definitely check out your Twitch stream tonight. Thanks for letting me know!"
+        ],
+        [
+          "Maria Lopez",
+          "Great! I'll see you at 5:00 pm then. Have a productive day at the library, Klaus!"
+        ],
+        [
+          "Klaus Mueller",
+          "Awesome! I'll definitely tune in to your Twitch stream tonight. Good luck with your physics classes!"
+        ],
+        [
+          "Maria Lopez",
+          "Good luck with your research paper on gentrification, Klaus! Let's definitely discuss it more in detail at Hobbs Cafe."
+        ],
+        [
+          "Klaus Mueller",
+          "Thanks, Maria! I'll see you at Hobbs Cafe at 5:00 pm. Have a great day!"
+        ],
+        [
+          "Maria Lopez",
+          "Great! I'll see you at 5:00 pm then. Have a productive day at the library, Klaus!"
+        ],
+        [
+          "Klaus Mueller",
+          "Looking forward to our coffee date at Hobbs Cafe! See you at 5:00 pm, Maria!"
+        ]
+      ],
+      "attack": null
+    },
+    "Klaus Mueller": {
+      "movement": [
+        127,
+        46
+      ],
+      "pronunciatio": "\ud83d\udcac",
+      "description": "conversing about plans for the day and catching up over coffee at Hobbs Cafe after studying at the library, with Maria Lopez and Klaus Mueller discussing research papers, physics classes, and a Twitch stream @ <persona> Maria Lopez",
+      "chat": [
+        [
+          "Maria Lopez",
+          "Hey Klaus! How did you sleep last night? Have any exciting plans for today?"
+        ],
+        [
+          "Klaus Mueller",
+          "Hey Maria! I actually had a great night's sleep. Today I plan on heading to the library to work on my research paper on the effects of gentrification in low-income communities. What about you?"
+        ],
+        [
+          "Maria Lopez",
+          "That sounds interesting! I'm actually planning on attending my physics classes at Oak Hill College and then hitting the library to study. We should catch up later!"
+        ],
+        [
+          "Klaus Mueller",
+          "That sounds like a plan! We should definitely catch up later, maybe grab a coffee at Hobbs Cafe after our library sessions."
+        ],
+        [
+          "Maria Lopez",
+          "Sounds like a plan! Let's meet at Hobbs Cafe around 5:00 pm after we finish studying."
+        ],
+        [
+          "Klaus Mueller",
+          "Great idea! I look forward to catching up with you at Hobbs Cafe at 5:00 pm."
+        ],
+        [
+          "Maria Lopez",
+          "Great! See you at 5:00 pm at Hobbs Cafe, Klaus!"
+        ],
+        [
+          "Klaus Mueller",
+          "I can't wait to discuss our findings on social issues over coffee. It'll be a great way to end the day."
+        ],
+        [
+          "Maria Lopez",
+          "By the way Klaus, I'll be streaming games on Twitch tonight from 6:00 pm to 9:00 pm. Feel free to tune in if you're interested!"
+        ],
+        [
+          "Klaus Mueller",
+          "That sounds awesome, Maria! I'll definitely check out your Twitch stream tonight. Thanks for letting me know!"
+        ],
+        [
+          "Maria Lopez",
+          "Great! I'll see you at 5:00 pm then. Have a productive day at the library, Klaus!"
+        ],
+        [
+          "Klaus Mueller",
+          "Awesome! I'll definitely tune in to your Twitch stream tonight. Good luck with your physics classes!"
+        ],
+        [
+          "Maria Lopez",
+          "Good luck with your research paper on gentrification, Klaus! Let's definitely discuss it more in detail at Hobbs Cafe."
+        ],
+        [
+          "Klaus Mueller",
+          "Thanks, Maria! I'll see you at Hobbs Cafe at 5:00 pm. Have a great day!"
+        ],
+        [
+          "Maria Lopez",
+          "Great! I'll see you at 5:00 pm then. Have a productive day at the library, Klaus!"
+        ],
+        [
+          "Klaus Mueller",
+          "Looking forward to our coffee date at Hobbs Cafe! See you at 5:00 pm, Maria!"
+        ]
+      ],
+      "attack": null
+    }
+  },
+  "meta": {
+    "curr_time": "February 13, 2023, 00:18:50"
+  }
+}

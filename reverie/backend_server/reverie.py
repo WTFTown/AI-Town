@@ -405,6 +405,7 @@ class ReverieServer:
             os.makedirs(os.path.dirname(curr_move_file), exist_ok=True)
             
           with open(curr_move_file, "w") as outfile: 
+            print(f"Movements data: {json.dumps(movements, indent=2)}")
             outfile.write(json.dumps(movements, indent=2))
 
           # After this cycle, the world takes one step forward, and the 

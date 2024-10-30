@@ -1,0 +1,143 @@
+{
+  "persona": {
+    "Isabella Rodriguez": {
+      "movement": [
+        73,
+        14
+      ],
+      "pronunciatio": "\ud83d\udebf",
+      "description": "waking up and completing her morning routine (washing her face) @ the Ville:Isabella Rodriguez's apartment:bathroom:bathroom sink",
+      "chat": null,
+      "attack": null
+    },
+    "Maria Lopez": {
+      "movement": [
+        123,
+        57
+      ],
+      "pronunciatio": "\ud83d\udcac",
+      "description": "conversing about Maria Lopez and Klaus Mueller are chatting about their sleeping patterns, daily schedules, and Klaus's research paper on the effects of gentrification in low-income communities. @ <persona> Klaus Mueller",
+      "chat": [
+        [
+          "Maria Lopez",
+          "Hey Klaus, how did you sleep last night?"
+        ],
+        [
+          "Klaus Mueller",
+          "Hey Maria, I slept pretty well, thanks for asking. How about you?"
+        ],
+        [
+          "Maria Lopez",
+          "I had a bit of trouble falling asleep, but eventually managed to get some rest."
+        ],
+        [
+          "Klaus Mueller",
+          "Oh, I'm sorry to hear that. Maybe you should try listening to some calming music before bed next time."
+        ],
+        [
+          "Maria Lopez",
+          "That's a great idea, I'll definitely try that. Thanks for the suggestion!"
+        ],
+        [
+          "Klaus Mueller",
+          "Do you have any plans for today?"
+        ],
+        [
+          "Maria Lopez",
+          "I have classes at Oak Hill College from 10:00 am to 1:00 pm, then I'll be studying at Hobbs Cafe from 2:00 pm to 5:00 pm."
+        ],
+        [
+          "Klaus Mueller",
+          "Sounds like a busy day for you! I'll be at the library working on my research paper all day."
+        ],
+        [
+          "Maria Lopez",
+          "What's your research paper about?"
+        ],
+        [
+          "Klaus Mueller",
+          "It's about the effects of gentrification in low-income communities. I find the topic really intriguing."
+        ],
+        [
+          "Maria Lopez",
+          "That sounds like a really interesting topic! I'd love to hear more about your research findings sometime."
+        ],
+        [
+          "Klaus Mueller",
+          "I'd be happy to share my research findings with you once I have some more data to analyze."
+        ],
+        [
+          "Maria Lopez",
+          "Well, good luck with your research paper, Klaus. I'll catch up with you later!"
+        ]
+      ],
+      "attack": null
+    },
+    "Klaus Mueller": {
+      "movement": [
+        114,
+        52
+      ],
+      "pronunciatio": "\ud83d\udcac",
+      "description": "conversing about Maria Lopez and Klaus Mueller are chatting about their sleeping patterns, daily schedules, and Klaus's research paper on the effects of gentrification in low-income communities. @ <persona> Maria Lopez",
+      "chat": [
+        [
+          "Maria Lopez",
+          "Hey Klaus, how did you sleep last night?"
+        ],
+        [
+          "Klaus Mueller",
+          "Hey Maria, I slept pretty well, thanks for asking. How about you?"
+        ],
+        [
+          "Maria Lopez",
+          "I had a bit of trouble falling asleep, but eventually managed to get some rest."
+        ],
+        [
+          "Klaus Mueller",
+          "Oh, I'm sorry to hear that. Maybe you should try listening to some calming music before bed next time."
+        ],
+        [
+          "Maria Lopez",
+          "That's a great idea, I'll definitely try that. Thanks for the suggestion!"
+        ],
+        [
+          "Klaus Mueller",
+          "Do you have any plans for today?"
+        ],
+        [
+          "Maria Lopez",
+          "I have classes at Oak Hill College from 10:00 am to 1:00 pm, then I'll be studying at Hobbs Cafe from 2:00 pm to 5:00 pm."
+        ],
+        [
+          "Klaus Mueller",
+          "Sounds like a busy day for you! I'll be at the library working on my research paper all day."
+        ],
+        [
+          "Maria Lopez",
+          "What's your research paper about?"
+        ],
+        [
+          "Klaus Mueller",
+          "It's about the effects of gentrification in low-income communities. I find the topic really intriguing."
+        ],
+        [
+          "Maria Lopez",
+          "That sounds like a really interesting topic! I'd love to hear more about your research findings sometime."
+        ],
+        [
+          "Klaus Mueller",
+          "I'd be happy to share my research findings with you once I have some more data to analyze."
+        ],
+        [
+          "Maria Lopez",
+          "Well, good luck with your research paper, Klaus. I'll catch up with you later!"
+        ]
+      ],
+      "attack": null
+    }
+  },
+  "meta": {
+    "curr_time": "February 13, 2023, 00:14:30"
+  }
+}

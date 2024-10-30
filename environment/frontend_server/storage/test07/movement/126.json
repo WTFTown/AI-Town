@@ -1,0 +1,37 @@
+{
+  "persona": {
+    "Isabella Rodriguez": {
+      "movement": [
+        73,
+        14
+      ],
+      "pronunciatio": "\ud83d\udc57",
+      "description": "waking up and completing her morning routine (getting dressed) @ the Ville:Isabella Rodriguez's apartment:bathroom:shower",
+      "chat": null,
+      "attack": null
+    },
+    "Maria Lopez": {
+      "movement": [
+        118,
+        51
+      ],
+      "pronunciatio": "\u2615",
+      "description": "waking up and completing her morning routine (conversing about plans for the day and catching up over coffee at Hobbs Cafe after studying at the library, with Maria Lopez and Klaus Mueller discussing research papers, physics classes, and a Twitch stream) @ the Ville:Hobbs Cafe:cafe:cafe customer seating",
+      "chat": null,
+      "attack": null
+    },
+    "Klaus Mueller": {
+      "movement": [
+        126,
+        50
+      ],
+      "pronunciatio": "\u2615\ud83d\udcda",
+      "description": "waking up and completing his morning routine (conversing about plans for the day and catching up over coffee at Hobbs Cafe after studying at the library, with Maria Lopez and Klaus Mueller discussing research papers, physics classes, and a Twitch stream) @ the Ville:Hobbs Cafe:cafe:cafe customer seating",
+      "chat": null,
+      "attack": null
+    }
+  },
+  "meta": {
+    "curr_time": "February 13, 2023, 00:21:00"
+  }
+}
