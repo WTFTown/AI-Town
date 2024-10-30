@@ -284,17 +284,36 @@ def reflect(persona):
                                   thought_embedding_pair, evidence)
 
 
+def retrieve_attack_memories(persona, attack_description):
+    """获取攻击相关的记忆"""
+    focal_points = ["attack", "violence", attack_description]
+    retrieved = new_retrieve(persona, focal_points, 10)
+    memory_str = ""
+    for memory in retrieved["events"] + retrieved["thoughts"]:
+        memory_str += f"{memory.description}\n"
+    return memory_str
+
 def generate_attack_reflection_thought(persona, attack_description):
     """生成攻击后的反思"""
-    # TODO 需要修改
-    return run_gpt_prompt_attack_reflection(persona, attack_description)[0]
+    memory_str = retrieve_attack_memories(persona, attack_description)
+    prompt_input = [
+        persona.name,
+        attack_description, 
+        memory_str,
+        f"{persona.name} (health: {persona.scratch.health}, attack_power: {persona.scratch.attack_power})"
+    ]
+    return run_gpt_prompt_attack_reflection(persona, prompt_input)[0]
 
 def generate_attack_memo(persona, attack_description):
     """生成攻击的备忘录"""
-    # TODO 需要修改
-    return run_gpt_prompt_attack_memo(persona, attack_description)[0]
-
-
+    memory_str = retrieve_attack_memories(persona, attack_description)
+    prompt_input = [
+        persona.name,
+        attack_description,
+        memory_str,
+        persona.scratch.get_str_iss()
+    ]
+    return run_gpt_prompt_attack_memo(persona, prompt_input)[0]
 
 
 

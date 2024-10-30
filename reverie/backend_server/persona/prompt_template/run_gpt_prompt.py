@@ -3223,23 +3223,9 @@ def run_gpt_prompt_generate_attack(maze, init_persona, target_persona, curr_cont
 
     return output, [output, prompt, gpt_param, prompt_input, fail_safe]
 
-def run_gpt_prompt_attack_reflection(persona, attack_description, test_input=None, verbose=False):
-    def create_prompt_input(persona, attack_description, test_input=None):
-        # 获取最近的攻击相关记忆
-        focal_points = ["attack", "violence", attack_description]
-        retrieved = new_retrieve(persona, focal_points, 10)
-        memory_str = ""
-        for memory in retrieved["events"] + retrieved["thoughts"]:
-            memory_str += f"{memory.description}\n"
-            
-        prompt_input = [
-            persona.name,
-            attack_description,
-            memory_str,
-            f"{persona.name} (health: {persona.scratch.health}, attack_power: {persona.scratch.attack_power})"
-        ]
-        return prompt_input
 
+def run_gpt_prompt_attack_reflection(persona, prompt_input, test_input=None, verbose=False):
+    """生成攻击反思的GPT响应"""
     def __func_clean_up(gpt_response, prompt=""):
         return gpt_response.strip()
 
@@ -3253,7 +3239,6 @@ def run_gpt_prompt_attack_reflection(persona, attack_description, test_input=Non
                  "temperature": 0.7, "top_p": 1, "stream": False,
                  "frequency_penalty": 0, "presence_penalty": 0, "stop": None}
     prompt_template = "persona/prompt_template/v2/attack_reflection_v1.txt"
-    prompt_input = create_prompt_input(persona, attack_description, test_input)
     prompt = generate_prompt(prompt_input, prompt_template)
 
     fail_safe = get_fail_safe()
@@ -3266,23 +3251,8 @@ def run_gpt_prompt_attack_reflection(persona, attack_description, test_input=Non
 
     return output, [output, prompt, gpt_param, prompt_input, fail_safe]
 
-def run_gpt_prompt_attack_memo(persona, attack_description, test_input=None, verbose=False):
-    def create_prompt_input(persona, attack_description, test_input=None):
-        # 获取最近的攻击相关记忆
-        focal_points = ["attack", "violence", attack_description]
-        retrieved = new_retrieve(persona, focal_points, 10)
-        memory_str = ""
-        for memory in retrieved["events"] + retrieved["thoughts"]:
-            memory_str += f"{memory.description}\n"
-            
-        prompt_input = [
-            persona.name,
-            attack_description,
-            memory_str,
-            persona.scratch.get_str_iss()  # 包含性格特征
-        ]
-        return prompt_input
-
+def run_gpt_prompt_attack_memo(persona, prompt_input, test_input=None, verbose=False):
+    """生成攻击备忘录的GPT响应"""
     def __func_clean_up(gpt_response, prompt=""):
         return gpt_response.strip()
 
@@ -3296,7 +3266,6 @@ def run_gpt_prompt_attack_memo(persona, attack_description, test_input=None, ver
                  "temperature": 0.7, "top_p": 1, "stream": False,
                  "frequency_penalty": 0, "presence_penalty": 0, "stop": None}
     prompt_template = "persona/prompt_template/v2/attack_memo_v1.txt"
-    prompt_input = create_prompt_input(persona, attack_description, test_input)
     prompt = generate_prompt(prompt_input, prompt_template)
 
     fail_safe = get_fail_safe()
