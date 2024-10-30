@@ -286,10 +286,12 @@ def reflect(persona):
 
 def generate_attack_reflection_thought(persona, attack_description):
     """生成攻击后的反思"""
+    # TODO 需要修改
     return run_gpt_prompt_attack_reflection(persona, attack_description)[0]
 
 def generate_attack_memo(persona, attack_description):
     """生成攻击的备忘录"""
+    # TODO 需要修改
     return run_gpt_prompt_attack_memo(persona, attack_description)[0]
 
 
