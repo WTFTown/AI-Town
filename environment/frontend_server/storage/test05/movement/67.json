@@ -1,0 +1,127 @@
+{
+  "persona": {
+    "Isabella Rodriguez": {
+      "movement": [
+        79,
+        16
+      ],
+      "pronunciatio": "\ud83e\uddfc",
+      "description": "waking up and completing her morning routine (washing her face) @ the Ville:Isabella Rodriguez's apartment:bathroom:bathroom sink",
+      "chat": null,
+      "attack": null
+    },
+    "Maria Lopez": {
+      "movement": [
+        124,
+        50
+      ],
+      "pronunciatio": "\ud83d\udcac",
+      "description": "conversing about Maria Lopez and Klaus Mueller chatting about their plans for the day, including Klaus working on his research paper at the library and Maria studying for her physics classes at Hobbs Cafe, and both looking forward to catching up later. @ <persona> Klaus Mueller",
+      "chat": [
+        [
+          "Maria Lopez",
+          "Hey Klaus, how are you doing today?"
+        ],
+        [
+          "Klaus Mueller",
+          "Hey Maria, I'm doing well, thank you. How about you?"
+        ],
+        [
+          "Maria Lopez",
+          "I'm doing great, thanks for asking. Did you have a good night's sleep?"
+        ],
+        [
+          "Klaus Mueller",
+          "Yes, I had a great night's sleep. I'm feeling refreshed and ready to tackle my research paper today."
+        ],
+        [
+          "Maria Lopez",
+          "That's awesome to hear! I'm actually excited about my physics classes today, have you started working on your paper yet?"
+        ],
+        [
+          "Klaus Mueller",
+          "I'm actually heading to the library now to work on it. How about you, have you started studying for your physics classes?"
+        ],
+        [
+          "Maria Lopez",
+          "I've reviewed some of the material, but I plan to do a more in-depth study session at Hobbs Cafe later today. Good luck with your research paper at the library!"
+        ],
+        [
+          "Klaus Mueller",
+          "Thanks, Maria! Good luck with your physics classes today, I'm sure you'll do great. Let's catch up after our study sessions!"
+        ],
+        [
+          "Maria Lopez",
+          "Thanks Klaus, looking forward to catching up later!"
+        ],
+        [
+          "Klaus Mueller",
+          "Have a productive study session at Hobbs Cafe! Looking forward to catching up with you later."
+        ],
+        [
+          "Maria Lopez",
+          "Thank you Klaus, I'll see you later!"
+        ]
+      ],
+      "attack": null
+    },
+    "Klaus Mueller": {
+      "movement": [
+        131,
+        50
+      ],
+      "pronunciatio": "\ud83d\udcac",
+      "description": "conversing about Maria Lopez and Klaus Mueller chatting about their plans for the day, including Klaus working on his research paper at the library and Maria studying for her physics classes at Hobbs Cafe, and both looking forward to catching up later. @ <persona> Maria Lopez",
+      "chat": [
+        [
+          "Maria Lopez",
+          "Hey Klaus, how are you doing today?"
+        ],
+        [
+          "Klaus Mueller",
+          "Hey Maria, I'm doing well, thank you. How about you?"
+        ],
+        [
+          "Maria Lopez",
+          "I'm doing great, thanks for asking. Did you have a good night's sleep?"
+        ],
+        [
+          "Klaus Mueller",
+          "Yes, I had a great night's sleep. I'm feeling refreshed and ready to tackle my research paper today."
+        ],
+        [
+          "Maria Lopez",
+          "That's awesome to hear! I'm actually excited about my physics classes today, have you started working on your paper yet?"
+        ],
+        [
+          "Klaus Mueller",
+          "I'm actually heading to the library now to work on it. How about you, have you started studying for your physics classes?"
+        ],
+        [
+          "Maria Lopez",
+          "I've reviewed some of the material, but I plan to do a more in-depth study session at Hobbs Cafe later today. Good luck with your research paper at the library!"
+        ],
+        [
+          "Klaus Mueller",
+          "Thanks, Maria! Good luck with your physics classes today, I'm sure you'll do great. Let's catch up after our study sessions!"
+        ],
+        [
+          "Maria Lopez",
+          "Thanks Klaus, looking forward to catching up later!"
+        ],
+        [
+          "Klaus Mueller",
+          "Have a productive study session at Hobbs Cafe! Looking forward to catching up with you later."
+        ],
+        [
+          "Maria Lopez",
+          "Thank you Klaus, I'll see you later!"
+        ]
+      ],
+      "attack": null
+    }
+  },
+  "meta": {
+    "curr_time": "February 13, 2023, 00:11:10"
+  }
+}

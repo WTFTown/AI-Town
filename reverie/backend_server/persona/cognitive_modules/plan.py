@@ -638,19 +638,26 @@ def _determine_action(persona, maze):
                                                 act_obj_desp, persona)
 
   # Adding the action to persona's queue. 
-  persona.scratch.add_new_action(new_address, 
-                                 int(act_dura), 
-                                 act_desp, 
-                                 act_pron, 
-                                 act_event,
-                                 None,
-                                 None,
-                                 None,
-                                 None,
-                                 act_obj_desp, 
-                                 act_obj_pron, 
-                                 act_obj_event)
-
+  persona.scratch.add_new_action(
+      action_address=new_address,
+      action_duration=int(act_dura),
+      action_description=act_desp,
+      action_pronunciatio=act_pron,
+      action_event=act_event,
+      chatting_with=None,
+      chat=None,
+      chatting_with_buffer=None,
+      chatting_end_time=None,
+      attacking_at=None,        # 新增
+      attack=None,             # 新增
+      being_attacked_by=None,  # 新增
+      attacking_buffer=None,   # 新增
+      attacking_end_time=None, # 新增
+      act_obj_description=act_obj_desp,
+      act_obj_pronunciatio=act_obj_pron,
+      act_obj_event=act_obj_event,
+      act_start_time=None
+  )
 
 def _choose_retrieved(persona, retrieved): 
   """
@@ -864,20 +871,26 @@ def _create_react(persona, inserted_act, inserted_act_dur,
   ret = generate_new_decomp_schedule(p, inserted_act, inserted_act_dur, 
                                        start_hour, end_hour)
   p.scratch.f_daily_schedule[start_index:end_index] = ret
-  p.scratch.add_new_action(act_address,
-                           inserted_act_dur,
-                           inserted_act,
-                           act_pronunciatio,
-                           act_event,
-                           chatting_with,
-                           chat,
-                           chatting_with_buffer,
-                           chatting_end_time,
-                           act_obj_description,
-                           act_obj_pronunciatio,
-                           act_obj_event,
-                           act_start_time)
-
+  p.scratch.add_new_action(
+      action_address=act_address,
+      action_duration=inserted_act_dur,
+      action_description=inserted_act,
+      action_pronunciatio=act_pronunciatio,
+      action_event=act_event,
+      chatting_with=chatting_with,
+      chat=chat,
+      chatting_with_buffer=chatting_with_buffer,
+      chatting_end_time=chatting_end_time,
+      attacking_at=None,        # 新增
+      attack=None,             # 新增
+      being_attacked_by=None,  # 新增
+      attacking_buffer=None,   # 新增
+      attacking_end_time=None, # 新增
+      act_obj_description=act_obj_description,
+      act_obj_pronunciatio=act_obj_pronunciatio,
+      act_obj_event=act_obj_event,
+      act_start_time=act_start_time
+  )
 
 def _chat_react(maze, persona, focused_event, reaction_mode, personas):
   # There are two personas -- the persona who is initiating the conversation
@@ -926,38 +939,69 @@ def _chat_react(maze, persona, focused_event, reaction_mode, personas):
       act_obj_event, act_start_time)
 
 def _attack_react(maze, persona, focused_event, personas):
-    """处理攻击事件的反应
-    
-    Args:
-        maze: 游戏地图实例
-        persona: 当前persona实例
-        focused_event: 检索到的相关事件
-        personas: 所有persona字典
-    """
-    # 获取攻击目标
+    """处理攻击事件的反应"""
+    # 获取攻击发起者和目标
+    init_persona = persona
     target_name = focused_event["curr_event"].description.split(" attacks ")[-1]
-    target_persona = None
-    for p in personas.values():
-        if p.name == target_name:
-            target_persona = p
-            break
-            
-    if target_persona:
-        # 调用agent_attack处理攻击
-        attack_result = agent_attack(maze, persona, target_persona)
-        
-        # 更新persona状态
-        persona.scratch.act_description = attack_result
-        persona.scratch.act_event = (persona.name, "attacks", target_persona.name)
-        persona.scratch.attacking_buffer = 5  # 设置攻击缓冲,避免连续攻击
-        
-        # 更新目标状态
-        if "defeated" in attack_result:
-            target_persona.scratch.health = 0
-        elif "fled" in attack_result:
-            target_persona.scratch.act_description = "fled from attack"
-            target_persona.scratch.act_event = (target_persona.name, "flees from", persona.name)
+    target_persona = personas[target_name]
 
+    # 生成攻击结果和持续时间
+    attack_result, duration_min = agent_attack(maze, init_persona, target_persona)
+    inserted_act = attack_result
+    inserted_act_dur = duration_min
+
+    # 设置攻击开始和结束时间
+    act_start_time = target_persona.scratch.act_start_time
+    curr_time = target_persona.scratch.curr_time
+    if curr_time.second != 0:
+        temp_curr_time = curr_time + datetime.timedelta(seconds=60 - curr_time.second)
+        attacking_end_time = temp_curr_time + datetime.timedelta(minutes=inserted_act_dur)
+    else:
+        attacking_end_time = curr_time + datetime.timedelta(minutes=inserted_act_dur)
+
+    # 为攻击者和被攻击者设置状态
+    for role, p in [("init", init_persona), ("target", target_persona)]:
+        if role == "init":
+            act_address = f"<persona> {target_persona.name}"
+            act_event = (p.name, "attacks", target_persona.name)
+            attacking_at = target_persona.name
+            attacking_buffer = {}
+            attacking_buffer[target_persona.name] = 800  # 攻击冷却时间
+            being_attacked_by = None
+        elif role == "target":
+            act_address = f"<persona> {init_persona.name}"
+            act_event = (p.name, "is attacked by", init_persona.name)
+            attacking_at = None
+            attacking_buffer = {}
+            being_attacked_by = init_persona.name
+
+        act_pronunciatio = "⚔️"  # 攻击表情符号
+        act_obj_description = None
+        act_obj_pronunciatio = None
+        act_obj_event = (None, None, None)
+
+        # 创建新的行动
+        _create_react(p, inserted_act, inserted_act_dur,
+            act_address, act_event, 
+            None,  # chatting_with
+            None,  # chat
+            None,  # chatting_with_buffer
+            None,  # chatting_end_time
+            attacking_at,  # 新增
+            attack_result,  # 新增
+            being_attacked_by,  # 新增
+            attacking_buffer,  # 新增
+            attacking_end_time,  # 新增
+            act_obj_description, 
+            act_obj_pronunciatio,
+            act_obj_event,
+            act_start_time)
+
+        # 更新目标状态
+        if "defeated" in attack_result and role == "target":
+            p.scratch.health = 0
+        elif "fled" in attack_result and role == "target":
+            p.scratch.act_description = "fled from attack"
 
 def _wait_react(persona, reaction_mode): 
   p = persona
@@ -1048,8 +1092,17 @@ def plan(persona, maze, personas, new_day, retrieved):
   # Step 3: Chat-related state clean up. 
   # If the persona is not chatting with anyone, we clean up any of the 
   # chat-related states here. 
-  if persona.scratch.act_event[1] != "attacks":
-    persona.scratch.attacking_buffer = max(0, persona.scratch.attacking_buffer - 1)
+    if persona.scratch.act_event[1] != "attacks":
+        # 对每个目标的冷却时间进行递减
+        if isinstance(persona.scratch.attacking_buffer, dict):
+            for target in list(persona.scratch.attacking_buffer.keys()):
+                persona.scratch.attacking_buffer[target] = max(0, persona.scratch.attacking_buffer[target] - 1)
+                # 可选：如果冷却时间变为0，可以从字典中移除该条目
+                if persona.scratch.attacking_buffer[target] == 0:
+                    del persona.scratch.attacking_buffer[target]
+        else:
+            # 如果不是字典，初始化为空字典
+            persona.scratch.attacking_buffer = {}
 
   if persona.scratch.act_event[1] != "chat with":
     persona.scratch.chatting_with = None

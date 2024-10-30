@@ -155,6 +155,10 @@ class Scratch:
 
     # ATTACKING states
     self.attacking_at = None
+    # <attack> is a list of list that saves a conversation between two personas.
+    # It comes in the form of: [["Dolores Murphy", "Attack Maeve Jenson with fists"], 
+    #                           ["Maeve Jenson", "Attack back at Dolores Murphy"] ...]
+    self.attack = None
     self.being_attacked_by = None
     self.attacking_end_time = None
     self.attacking_buffer = dict()
@@ -249,6 +253,7 @@ class Scratch:
         self.chatting_end_time = None
 
       self.attacking_at = scratch_load["attacking_at"]
+      self.attack = scratch_load["attack"]
       self.being_attacked_by = scratch_load["being_attacked_by"]
       self.attacking_buffer = scratch_load["attacking_buffer"]
       if scratch_load["attacking_end_time"]: 
@@ -337,6 +342,7 @@ class Scratch:
       scratch["chatting_end_time"] = None
 
     scratch["attacking_at"] = self.attacking_at
+    scratch["attack"] = self.attack
     scratch["being_attacked_by"] = self.being_attacked_by
     if self.attacking_end_time: 
       scratch["attacking_end_time"] = (self.attacking_end_time
@@ -534,6 +540,7 @@ class Scratch:
                      chatting_with_buffer,
                      chatting_end_time,
                      attacking_at, 
+                     attack,
                      being_attacked_by, 
                      attacking_buffer, 
                      attacking_end_time,
@@ -554,6 +561,7 @@ class Scratch:
     self.chatting_end_time = chatting_end_time
 
     self.attacking_at = attacking_at
+    self.attack = attack
     self.being_attacked_by = being_attacked_by
     self.attacking_end_time = attacking_end_time
     if attacking_buffer: 

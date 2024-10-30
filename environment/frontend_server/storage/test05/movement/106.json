@@ -1,0 +1,37 @@
+{
+  "persona": {
+    "Isabella Rodriguez": {
+      "movement": [
+        73,
+        14
+      ],
+      "pronunciatio": "\ud83d\udc55",
+      "description": "waking up and completing her morning routine (getting dressed) @ the Ville:Isabella Rodriguez's apartment:bathroom:shower",
+      "chat": null,
+      "attack": null
+    },
+    "Maria Lopez": {
+      "movement": [
+        114,
+        51
+      ],
+      "pronunciatio": "\ud83d\udcda",
+      "description": "waking up and completing her morning routine (conversing about Maria Lopez and Klaus Mueller chatting about their plans for the day, including Klaus working on his research paper at the library and Maria studying for her physics classes at Hobbs Cafe, and both looking forward to catching up later.) @ the Ville:Dorm for Oak Hill College:common room:common room sofa",
+      "chat": null,
+      "attack": null
+    },
+    "Klaus Mueller": {
+      "movement": [
+        128,
+        50
+      ],
+      "pronunciatio": "\ud83d\udcda",
+      "description": "waking up and completing his morning routine (conversing about Maria Lopez and Klaus Mueller chatting about their plans for the day, including Klaus working on his research paper at the library and Maria studying for her physics classes at Hobbs Cafe, and both looking forward to catching up later.) @ the Ville:Dorm for Oak Hill College:common room:common room table",
+      "chat": null,
+      "attack": null
+    }
+  },
+  "meta": {
+    "curr_time": "February 13, 2023, 00:17:40"
+  }
+}
