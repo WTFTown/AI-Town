@@ -1,12 +1,12 @@
 import datetime
 import random
-from global_methods import get_embedding
+from persona.prompt_template.gpt_structure import *
 from persona.cognitive_modules.retrieve import *
 from persona.prompt_template.run_gpt_prompt import (
     run_gpt_prompt_attack_summarize_ideas,
     run_gpt_prompt_attack_summarize_relationship,
     run_gpt_prompt_generate_attack,
-    run_gpt_prompt_generate_attack_poignancy,
+    run_gpt_prompt_attack_poignancy,
     run_gpt_prompt_decide_to_attack,
     run_gpt_prompt_decide_attack_reaction,
     run_gpt_prompt_generate_attack_action
@@ -71,7 +71,7 @@ def agent_attack(maze, init_persona, target_persona):
                         summarized_ideas[1])
 
 def generate_attack_poignancy(persona, attack_description):
-    attack_poignancy = run_gpt_prompt_generate_attack_poignancy(persona, attack_description)[0]
+    attack_poignancy = run_gpt_prompt_attack_poignancy(persona, attack_description)[0]
     return attack_poignancy
 
 def add_attack_to_memory(persona, target_persona, attack_details):

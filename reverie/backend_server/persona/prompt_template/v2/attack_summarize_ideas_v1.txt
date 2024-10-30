@@ -1,0 +1,26 @@
+Variables:
+!<INPUT 0>! -- init_persona name
+!<INPUT 1>! -- target_persona name
+!<INPUT 2>! -- all_embedding_key_str (相关记忆)
+!<INPUT 3>! -- curr_context (当前情境)
+
+<commentblockmarker>###</commentblockmarker>
+Task: Analyze !<INPUT 0>!'s thoughts about potentially attacking !<INPUT 1>!.
+
+Current Situation:
+!<INPUT 3>!
+
+Relevant History:
+!<INPUT 2>!
+
+Question: Based on their history and the current situation, what are !<INPUT 0>!'s thoughts about attacking !<INPUT 1>!?
+
+Consider:
+1. Past interactions and current context
+2. Motivations for attack
+3. Potential consequences
+4. Emotional state
+
+Write a brief summary of !<INPUT 0>!'s thoughts and motivations in 2-3 sentences.
+
+Answer:

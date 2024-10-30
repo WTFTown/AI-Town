@@ -1,0 +1,36 @@
+Variables:
+!<INPUT 0>! -- init_persona name
+!<INPUT 1>! -- target_persona name
+!<INPUT 2>! -- curr_context
+!<INPUT 3>! -- init_summ_idea
+!<INPUT 4>! -- target_summ_idea
+!<INPUT 5>! -- init_persona stats
+!<INPUT 6>! -- target_persona stats
+
+<commentblockmarker>###</commentblockmarker>
+Task: Generate a detailed description of how !<INPUT 0>! attacks !<INPUT 1>!.
+
+Current Situation:
+!<INPUT 2>!
+
+Character Thoughts:
+Attacker's Perspective: !<INPUT 3>!
+Target's Perspective: !<INPUT 4>!
+
+Combat Stats:
+!<INPUT 5>!
+!<INPUT 6>!
+
+Instructions:
+1. Consider both characters' perspectives and current states
+2. Generate a realistic and detailed attack description
+3. Account for their health and attack power
+4. Make the action fit the context and motivations
+
+Generate a specific and vivid description of how !<INPUT 2>! attacks !<INPUT 3>!. The description should:
+- Be a single sentence
+- Include specific physical action
+- Consider the attacker's capabilities and target's state
+- Be realistic given the circumstances
+
+!<INPUT 0>!: "

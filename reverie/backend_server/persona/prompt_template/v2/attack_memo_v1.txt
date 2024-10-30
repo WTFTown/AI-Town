@@ -1,0 +1,28 @@
+Variables:
+!<INPUT 0>! -- persona name
+!<INPUT 1>! -- attack description
+!<INPUT 2>! -- memory_str
+!<INPUT 3>! -- persona's iss
+
+<commentblockmarker>###</commentblockmarker>
+Task: Generate a brief mental note about the violent encounter from !<INPUT 0>!'s perspective.
+
+Personality:
+!<INPUT 3>!
+
+Event Description:
+!<INPUT 1>!
+
+Related Memories:
+!<INPUT 2>!
+
+Instructions:
+Create a concise mental note that:
+1. Captures the key aspects of the encounter
+2. Reflects !<INPUT 0>!'s personality
+3. Focuses on what they want to remember
+4. Uses active voice
+
+Write down if there is anything from the attack that !<INPUT 0>! might have found meaningful, in a full sentence. 
+
+Answer:

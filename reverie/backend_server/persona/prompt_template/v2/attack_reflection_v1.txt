@@ -1,0 +1,28 @@
+Variables:
+!<INPUT 0>! -- persona name
+!<INPUT 1>! -- attack description
+!<INPUT 2>! -- memory_str
+!<INPUT 3>! -- persona's iss
+
+<commentblockmarker>###</commentblockmarker>
+Task: Generate a reflection on the violent encounter from !<INPUT 0>!'s perspective.
+
+Personality:
+!<INPUT 3>!
+
+Event Description:
+!<INPUT 1>!
+
+Related Memories:
+!<INPUT 2>!
+
+Instructions:
+Consider:
+1. !<INPUT 0>!'s personality and values
+2. The emotional impact of the violence
+3. Potential consequences and lessons learned
+4. How this affects their relationships
+
+Write a thoughtful reflection in one full sentence that captures !<INPUT 0>!'s inner thoughts about the violent encounter.
+
+Answer:

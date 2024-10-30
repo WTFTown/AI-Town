@@ -1,0 +1,23 @@
+Variables:
+!<INPUT 0>! -- init_persona name
+!<INPUT 1>! -- target_persona name  
+!<INPUT 2>! -- all_embedding_key_str related memories
+
+<commentblockmarker>###</commentblockmarker>
+Task: Summarize the relationship between !<INPUT 0>! and !<INPUT 1>! based on their history.
+
+Context:
+Here are the relevant memories and thoughts:
+!<INPUT 2>!
+
+Question: Based on these memories, what is the relationship between !<INPUT 0>! and !<INPUT 1>!?
+
+Consider:
+1. Past interactions and encounters
+2. Emotional connections (positive/negative)
+3. Any conflicts or cooperation
+4. Current standing
+
+Write a brief summary of their relationship in 1-2 sentences.
+
+Answer:

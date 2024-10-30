@@ -2982,10 +2982,8 @@ def run_gpt_prompt_decide_to_attack(persona, target_persona, retrieved, test_inp
             target_persona.name,
             last_interaction_time,
             last_interaction_about,
-            f"{init_persona.name} (violence_score: {init_persona.scratch.violence_score}, health: {init_persona.scratch.health}, attack_power: {init_persona.scratch.attack_power})",
-            f"{target_persona.name} (health: {target_persona.scratch.health}, attack_power: {target_persona.scratch.attack_power})",
-            init_persona.name,
-            target_persona.name
+            f"Attacker: (violence_score: {init_persona.scratch.violence_score}, health: {init_persona.scratch.health}, attack_power: {init_persona.scratch.attack_power})",
+            f"Target: (health: {target_persona.scratch.health}, attack_power: {target_persona.scratch.attack_power})",
         ]
         return prompt_input
 
@@ -3037,14 +3035,14 @@ def run_gpt_prompt_decide_attack_reaction(persona, attacker_persona, attack_desc
 
         prompt_input = [
             persona.scratch.get_str_iss(),
+            persona.name,
             attacker_persona.name,
             attack_description,
             memory_str,
             last_interaction_time,
             last_interaction_about,
-            f"{persona.name} (health: {persona.scratch.health}, attack_power: {persona.scratch.attack_power})",
-            f"{attacker_persona.name} (health: {attacker_persona.scratch.health}, attack_power: {attacker_persona.scratch.attack_power})",
-            persona.name
+            f"Target: (health: {persona.scratch.health}, attack_power: {persona.scratch.attack_power})",
+            f"Attacker: (health: {attacker_persona.scratch.health}, attack_power: {attacker_persona.scratch.attack_power})",
         ]
         return prompt_input
 
@@ -3079,11 +3077,11 @@ def run_gpt_prompt_generate_attack_action(persona, target_persona, test_input=No
     def create_prompt_input(persona, target_persona, test_input=None):
         prompt_input = [
             persona.scratch.get_str_iss(),
-            target_persona.name,
-            f"{persona.name} (health: {persona.scratch.health}, attack_power: {persona.scratch.attack_power})",
-            f"{target_persona.name} (health: {target_persona.scratch.health}, attack_power: {target_persona.scratch.attack_power})",
+            target_persona.scratch.get_str_iss(),
             persona.name,
-            target_persona.name
+            target_persona.name,
+            f"Attacker: (health: {persona.scratch.health}, attack_power: {persona.scratch.attack_power})",
+            f"Target: (health: {target_persona.scratch.health}, attack_power: {target_persona.scratch.attack_power})",
         ]
         return prompt_input
 

@@ -1,0 +1,43 @@
+Variables:
+!<INPUT 0>! -- target persona's personality (iss)
+!<INPUT 1>! -- target persona's name
+!<INPUT 2>! -- attacker persona's name  
+!<INPUT 3>! -- attack description
+!<INPUT 4>! -- relevant memories
+!<INPUT 5>! -- last interaction time
+!<INPUT 6>! -- last interaction description
+!<INPUT 7>! -- target's stats
+!<INPUT 8>! -- attacker's stats
+
+<commentblockmarker>###</commentblockmarker>
+Task: Determine how !<INPUT 1>! will react to being attacked by !<INPUT 2>!.
+
+Character Information:
+!<INPUT 0>!
+
+Attack Situation:
+!<INPUT 2>! has just attacked !<INPUT 1>!: !<INPUT 3>!
+
+Relevant History:
+!<INPUT 4>!
+
+Last Interaction: 
+!<INPUT 1>! and !<INPUT 2>! last interacted at !<INPUT 5>! about !<INPUT 6>!
+
+Current States:
+!<INPUT 7>!
+!<INPUT 8>!
+
+Question: How will !<INPUT 1>! react to this attack?
+
+Reasoning: Let's analyze this step-by-step:
+1. Consider !<INPUT 1>!'s personality and tendencies
+2. Consider the severity of the attack
+3. Consider their history and relationship
+4. Consider both parties' current combat capabilities
+
+Choose the most appropriate reaction:
+- attack back: If !<INPUT 1>! is capable and motivated to fight back
+- flee: If escape is the safer or more sensible option
+
+Answer (attack back/flee):

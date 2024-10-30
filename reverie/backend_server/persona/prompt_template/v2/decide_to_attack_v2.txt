@@ -1,13 +1,13 @@
 decide_to_attack_v2.txt
 
-Task: Determine whether !<INPUT 8>! will initiate an attack against !<INPUT 9>!.
+Task: Determine whether !<INPUT 6>! will initiate an attack against !<INPUT 7>!.
 Context: !<INPUT 0>!
 Current time: !<INPUT 1>!
 Last interaction: !<INPUT 2>! and !<INPUT 3>! last interacted at !<INPUT 4>! about !<INPUT 5>!.
 Potential attacker: !<INPUT 6>!
 Potential target: !<INPUT 7>!
 
-Question: Would !<INPUT 8>! initiate an attack against !<INPUT 9>!?
+Question: Would !<INPUT 6>! initiate an attack against !<INPUT 7>!?
 
 Reasoning: Let's think through this step-by-step, considering the context, the characters' history, and their current states.
 
@@ -33,7 +33,7 @@ Right now, it is !<INPUT 1>!. !<INPUT 2>! and !<INPUT 3>! last interacted at !<I
 !<INPUT 6>!
 !<INPUT 7>!
 
-Question: Would !<INPUT 8>! initiate an attack against !<INPUT 9>!?
+Question: Would !<INPUT 6>! initiate an attack against !<INPUT 7>!?
 
 Reasoning: Let's think step by step.
 
