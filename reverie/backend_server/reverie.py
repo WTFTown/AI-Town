@@ -27,6 +27,7 @@ import math
 import os
 import shutil
 import traceback
+import argparse
 
 from selenium import webdriver
 
@@ -34,6 +35,18 @@ from global_methods import *
 from utils import *
 from maze import *
 from persona.persona import *
+
+current_file = os.path.abspath(__file__)
+
+def trace_calls_and_lines(frame, event, arg):
+    if event == 'call':
+        code = frame.f_code
+        filename = code.co_filename
+        short_filename = os.path.relpath(filename)
+        if os.path.abspath(filename).startswith(os.getcwd()):
+        # # if os.path.abspath(filename).startswith():
+        # # if filename == current_file:
+            print(f"Calling function: {code.co_name} in {short_filename}:{code.co_firstlineno}")
 
 ##############################################################################
 #                                  REVERIE                                   #
@@ -43,6 +56,9 @@ class ReverieServer:
   def __init__(self, 
                fork_sim_code,
                sim_code):
+    
+    print ("(reverie): Temp storage: ", fs_temp_storage)
+        
     # FORKING FROM A PRIOR SIMULATION:
     # <fork_sim_code> indicates the simulation we are forking from. 
     # Interestingly, all simulations must be forked from some initial 
@@ -304,6 +320,9 @@ class ReverieServer:
 
     # The main while loop of Reverie. 
     while (True): 
+      print(f"Step {self.step}: Processing...")
+      print(f"Current time: {self.curr_time}")
+
       # Done with this iteration if <int_counter> reaches 0. 
       if int_counter == 0: 
         break
@@ -336,6 +355,8 @@ class ReverieServer:
           # We first move our personas in the backend environment to match 
           # the frontend environment. 
           for persona_name, persona in self.personas.items(): 
+            print(f"Processing {persona_name}...")
+            print(f"State: {persona.scratch.__dict__}")
             # <curr_tile> is the tile that the persona was at previously. 
             curr_tile = self.personas_tile[persona_name]
             # <new_tile> is the tile that the persona will move to right now,
@@ -399,13 +420,11 @@ class ReverieServer:
           # {"persona": {"Maria Lopez": {"movement": [58, 9]}},
           #  "persona": {"Klaus Mueller": {"movement": [38, 12]}}, 
           #  "meta": {curr_time: <datetime>}}
+          curr_move_path = f"{sim_folder}/movement"
+          if not os.path.exists(curr_move_path):
+            os.makedirs(curr_move_path)
           curr_move_file = f"{sim_folder}/movement/{self.step}.json"
-          # if the folder doesn't exist, we create it first.
-          if not os.path.exists(os.path.dirname(curr_move_file)):
-            os.makedirs(os.path.dirname(curr_move_file), exist_ok=True)
-            
           with open(curr_move_file, "w") as outfile: 
-            print(f"Movements data: {json.dumps(movements, indent=2)}")
             outfile.write(json.dumps(movements, indent=2))
 
           # After this cycle, the world takes one step forward, and the 
@@ -414,12 +433,11 @@ class ReverieServer:
           self.curr_time += datetime.timedelta(seconds=self.sec_per_step)
 
           int_counter -= 1
-          
       # Sleep so we don't burn our machines. 
       time.sleep(self.server_sleep)
 
 
-  def open_server(self): 
+  def open_server(self, input_command: str = None) -> None: 
     """
     Open up an interactive terminal prompt that lets you run the simulation 
     step by step and probe agent state. 
@@ -438,7 +456,10 @@ class ReverieServer:
     sim_folder = f"{fs_storage}/{self.sim_code}"
 
     while True: 
-      sim_command = input("Enter option: ")
+      if not input_command:
+        sim_command = input("Enter option: ")
+      else:
+        sim_command = input_command
       sim_command = sim_command.strip()
       ret_str = ""
 
@@ -472,7 +493,7 @@ class ReverieServer:
           # Runs the number of steps specified in the prompt.
           # Example: run 1000
           int_count = int(sim_command.split()[-1])
-          rs.start_server(int_count)
+          self.start_server(int_count)
 
         elif ("print persona schedule" 
               in sim_command[:22].lower()): 
@@ -598,26 +619,48 @@ class ReverieServer:
           load_history_via_whisper(self.personas, clean_whispers)
 
         print (ret_str)
-
-      except:
-        traceback.print_exc()
-        print ("Error.")
-        pass
-
+        
+      except Exception as e:
+        print("(reverie): Error: ", e)
+        # remove movement file if it exists
+        movement_file = f"{sim_folder}/movement/{self.step}.json"
+        if os.path.exists(movement_file):
+          os.remove(movement_file)
+        # remove environment file if it exists
+        env_file = f"{sim_folder}/environment/{self.step}.json"
+        if os.path.exists(env_file):
+          os.remove(env_file)
+        print(f"(reverie): Error at step {self.step}")
+        self.step -= 1
+        self.curr_time -= datetime.timedelta(seconds=self.sec_per_step)
+        raise Exception(e, self.step)
+      else:
+        # If an input command was passed, then execute one command and exit.
+        if input_command:
+          break
 
 if __name__ == '__main__':
-  # rs = ReverieServer("base_the_ville_isabella_maria_klaus", 
-  #                    "July1_the_ville_isabella_maria_klaus-step-3-1")
-  # rs = ReverieServer("July1_the_ville_isabella_maria_klaus-step-3-20", 
-  #                    "July1_the_ville_isabella_maria_klaus-step-3-21")
-  # rs.open_server()
 
-  origin = input("Enter the name of the forked simulation: ").strip()
-  target = input("Enter the name of the new simulation: ").strip()
-
+  # Pars input params
+  parser = argparse.ArgumentParser(description='Reverie Server')
+  parser.add_argument(
+    '--origin',
+    type=str,
+    default="attack_the_ville_isabella_maria_klaus",
+    help='The name of the forked simulation'
+  )
+  parser.add_argument(
+    '--target',
+    type=str,
+    default="test13",
+    help='The name of the new simulation'
+  )
+    
+  origin = parser.parse_args().origin
+  target = parser.parse_args().target
+  
   rs = ReverieServer(origin, target)
   rs.open_server()
-
 
 
 
